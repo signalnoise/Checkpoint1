@@ -22,9 +22,9 @@ public class Main {
     }
 
     public static void main(String[] args){
-        double temperature = 1;
-        width = 500;
-        height = 500;
+        double temperature = 1000;
+        width = 50;
+        height = 50;
         vis = new Visualisation(width,height);
         Glauber glauber = new Glauber(width, height, temperature);
         //Kawasaki glauber = new Kawasaki(width, height, temperature);
@@ -35,10 +35,14 @@ public class Main {
         while(true){
             glauber.update();
             count++;
-            if (count%2000*width==0){
+            if (count%glauber.sweep()==0){
                 setColors(glauber);
                 vis.draw();
             }
+            if (count == 1000000){
+                glauber.setTemperature(1);
+            }
+
         }
 
     }

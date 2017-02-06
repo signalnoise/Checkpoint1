@@ -87,6 +87,10 @@ public abstract class IsingDynamics {
         return -(spinOf(i,j))*(this.left(i,j) + this.right(i,j) + this.above(i,j) + this.below(i,j));
     }
 
+    public void setTemperature(double T){
+        temperature = T;
+    }
+
     //Implements the metropolis algorithm
     public void metropolis() {
         double deltaE = this.energyChange();
@@ -108,6 +112,39 @@ public abstract class IsingDynamics {
             }
         }
 
+    }
+
+    public void allTrue(){
+        for (int i=0; i<this.grid.length; i++) {
+            for (int j=0; j<this.grid[i].length; j++) {
+                grid[i][j] = true;
+            }
+        }
+    }
+
+    public void allFalse(){
+        for (int i=0; i<this.grid.length; i++) {
+            for (int j=0; j<this.grid[i].length; j++) {
+                grid[i][j] = false;
+            }
+        }
+    }
+
+    //Returns the sum of all the spins in the grid
+    public int getMagnetisation(){
+        int m = 0;
+
+        for (int i=0; i<this.width; i++){
+            for (int j=0; j<this.height; j++){
+                m += this.getSpin(i,j);
+            }
+        }
+        return m;
+    }
+
+    //Returns the sweep size
+    public int sweep(){
+        return width*height;
     }
 
     //Makes it easier to print
