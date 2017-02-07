@@ -142,6 +142,18 @@ public abstract class IsingDynamics {
         return m;
     }
 
+    //Returns the total energy of the state
+    public int getEnergy(){
+        int e = 0;
+
+        for (int i=0; i<this.width; i++){
+            for (int j=0; j<this.height; j++){
+                e += (-this.getSpin(i,j)*(this.above(i,j)+this.right(i,j)));
+            }
+        }
+        return e;
+    }
+
     //Returns the sweep size
     public int sweep(){
         return width*height;

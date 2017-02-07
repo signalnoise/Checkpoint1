@@ -28,8 +28,7 @@ public class Main {
         vis = new Visualisation(width,height);
         Glauber glauber = new Glauber(width, height, temperature);
         //Kawasaki glauber = new Kawasaki(width, height, temperature);
-        glauber.fillRandomly();
-        setColors(glauber);
+        glauber.fillRandomly();setColors(glauber);
         vis.draw();
         int count = 0;
         while(true){
@@ -40,7 +39,7 @@ public class Main {
                 vis.draw();
             }
             if (count == 1000000){
-                glauber.setTemperature(1);
+                glauber.setTemperature(2.3);
             }
 
         }
