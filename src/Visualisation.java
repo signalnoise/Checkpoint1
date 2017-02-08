@@ -50,9 +50,11 @@ class Visualisation extends JFrame {
 
         vis = new VisualisationPanel(width, height);
         JPanel panel = new JPanel();
+        JLabel label = new JLabel("Temperature");
         slider = new JSlider(1, 400);
         slider.addChangeListener(listener);
         setLayout(new BorderLayout(0,0));
+        panel.add(label,BorderLayout.LINE_START);
         panel.add(slider, BorderLayout.CENTER);
         Double init = ((double) slider.getValue()/100.);
         textField = new JTextField(Double.toString(init));

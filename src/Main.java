@@ -24,11 +24,11 @@ public class Main {
 
     public static void main(String[] args){
         double temperature = 2;
-        width = 50;
-        height = 50;
+        width = 200;
+        height = 200;
         vis = new Visualisation(width,height);
-        //Glauber glauber = new Glauber(width, height, temperature);
-        Kawasaki glauber = new Kawasaki(width, height, temperature);
+        Glauber glauber = new Glauber(width, height, temperature);
+        //Kawasaki glauber = new Kawasaki(width, height, temperature);
         glauber.fillRandomly();setColors(glauber);
         vis.draw();
         int count = 0;

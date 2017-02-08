@@ -84,7 +84,7 @@ public class Data {
             }
 
             susceptibility[i] = var(magnetisation)/((double)isingGrid.sweep()*temperature);
-            heatCapacity[i] = var(energy)/(Math.pow(temperature,2));
+            heatCapacity[i] = var(energy)/((double)isingGrid.sweep()*Math.pow(temperature,2));
             avgMag[i] = avg(magnetisation);
 
             log(Double.toString(temperature) + " "
