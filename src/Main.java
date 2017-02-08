@@ -13,36 +13,34 @@ public class Main {
         for (int i=0; i<width; i++){
             for (int j=0; j<height; j++){
                 if (dy.getBoolean(i, j)) {
-                    vis.set(i, j, Color.MAGENTA);
+                    vis.set(i, j, Color.cyan);
                 }
                 else {
-                    vis.set(i,j, Color.cyan);
+                    vis.set(i,j, Color.magenta);
                 }
             }
         }
     }
 
     public static void main(String[] args){
-        double temperature = 1000;
+        double temperature = 2;
         width = 50;
         height = 50;
         vis = new Visualisation(width,height);
-        JSlider slider = new JSlider();
-        Glauber glauber = new Glauber(width, height, temperature);
-        //Kawasaki glauber = new Kawasaki(width, height, temperature);
+        //Glauber glauber = new Glauber(width, height, temperature);
+        Kawasaki glauber = new Kawasaki(width, height, temperature);
         glauber.fillRandomly();setColors(glauber);
         vis.draw();
         int count = 0;
         while(true){
             glauber.update();
             count++;
-            if (count%glauber.sweep()==0){
+            if (count%(glauber.sweep())==0){
                 setColors(glauber);
                 vis.draw();
+                glauber.setTemperature(vis.getTemperature());
             }
-            if (count == 1000000){
-                glauber.setTemperature(2.3);
-            }
+
 
         }
 

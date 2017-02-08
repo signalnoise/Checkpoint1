@@ -1,33 +1,77 @@
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Graphics;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
-class Visualisation extends Frame {
+class Visualisation extends JFrame {
     private BufferedImage foreground;
     private BufferedImage background;
+    private VisualisationPanel vis;
+    private ChangeListener listener;
+    private ActionListener textListener;
+    private JTextField textField;
+    private JSlider slider;
+
 
     Visualisation(int width, int height) {
-        foreground = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        background = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        listener = new ChangeListener()
+        {
+            public void stateChanged(ChangeEvent event)
+            {
+                // update text field when the slider value changes
+                JSlider source = (JSlider) event.getSource();
+                double doubleValue = (double)source.getValue()/100.;
+                textField.setText(" " + doubleValue);
+            }
+        };
+
+        textListener = new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                JTextField source = (JTextField) e.getSource();
+                double doubleValue = 100*Double.parseDouble(source.getText());
+                int intValue = (int)doubleValue;
+                slider.setValue(intValue);
+            }
+        };
+
+
+        vis = new VisualisationPanel(width, height);
+        Dimension dimension = new Dimension(500, 500);
+        JPanel panel = new JPanel();
+        slider = new JSlider(1, 400);
+        slider.addChangeListener(listener);
+        setLayout(new BorderLayout(0,0));
+        panel.add(slider, BorderLayout.CENTER);
+        Double init = ((double) slider.getValue()/100.);
+        textField = new JTextField(Double.toString(init));
+        textField.addActionListener(textListener);
+        panel.add(textField, BorderLayout.LINE_END);
+        add(panel, BorderLayout.PAGE_END);
+        add(vis, BorderLayout.CENTER);
+        pack();
+        setResizable(false);
         setVisible(true);
-        setSize(500, 500 + getInsets().top);
         setLocationRelativeTo(null);
         addWindowListener(new WindowAdapter() {public void windowClosing(WindowEvent event) {System.exit(0);}});
     }
 
+    public double getTemperature(){
+        return (double)slider.getValue()/100;
+    }
+
     void set(int column, int row, Color color) {
-        background.setRGB(column, row, color.getRGB());
+        vis.set(column, row, color);
     }
 
     void draw() {
-        foreground.setData(background.getData());
+        vis.draw();
         getGraphics().drawImage(foreground, 0, getInsets().top, getWidth(), getHeight() - getInsets().top, null);
     }
 
-    public void paint(Graphics graphics) {
-        graphics.drawImage(foreground, 0, getInsets().top, getWidth(), getHeight() - getInsets().top, null);
-    }
 }
