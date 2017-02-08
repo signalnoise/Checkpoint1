@@ -38,7 +38,7 @@ public class Data {
         double temperature = 1.5; //Bottom temperature
         int width = 50; //Grid Size
         int height = 50;
-        int iterations = 4000000; //Number of iterations per run
+        int iterations = 1000000; //Number of iterations per run
         Glauber isingGrid = new Glauber(width, height, temperature);
         //Kawasaki isingGrid = new Kawasaki(width, height, temperature);
         int n = (5*iterations)/10; //Fraction of data points used to analyse
@@ -61,10 +61,11 @@ public class Data {
 
         //
         for (int i=0; i<(noSimulations); i++) {
+
             temperature = temperature+tempStep;
             isingGrid.allTrue();
-            //isingGrid.fillRandomly();
             isingGrid.setTemperature(temperature);
+
             int count = 0;
             int magnetisationCount = 0;
 

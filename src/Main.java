@@ -1,5 +1,6 @@
 
 
+import javax.swing.*;
 import java.awt.Color;
 
 public class Main {
@@ -26,6 +27,7 @@ public class Main {
         width = 50;
         height = 50;
         vis = new Visualisation(width,height);
+        JSlider slider = new JSlider();
         Glauber glauber = new Glauber(width, height, temperature);
         //Kawasaki glauber = new Kawasaki(width, height, temperature);
         glauber.fillRandomly();setColors(glauber);
