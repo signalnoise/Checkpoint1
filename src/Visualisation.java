@@ -9,8 +9,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
 class Visualisation extends JFrame {
-    private BufferedImage foreground;
-    private BufferedImage background;
+
     private VisualisationPanel vis;
     private ChangeListener listener;
     private ActionListener textListener;
@@ -28,15 +27,23 @@ class Visualisation extends JFrame {
                 JSlider source = (JSlider) event.getSource();
                 double doubleValue = (double)source.getValue()/100.;
                 textField.setText(" " + doubleValue);
+                pack();
             }
         };
 
         textListener = new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 JTextField source = (JTextField) e.getSource();
-                double doubleValue = 100*Double.parseDouble(source.getText());
-                int intValue = (int)doubleValue;
-                slider.setValue(intValue);
+                try {
+                    double doubleValue = 100 * Double.parseDouble(source.getText());
+                    int intValue = (int)doubleValue;
+                    slider.setValue(intValue);
+                    pack();
+                } catch (NumberFormatException exception){
+                    double doubleValue = (double)slider.getValue()/100;
+                    textField.setText(" "+doubleValue);
+                }
+
             }
         };
 
@@ -71,7 +78,6 @@ class Visualisation extends JFrame {
 
     void draw() {
         vis.draw();
-        getGraphics().drawImage(foreground, 0, getInsets().top, getWidth(), getHeight() - getInsets().top, null);
     }
 
 }
