@@ -49,7 +49,6 @@ class Visualisation extends JFrame {
 
 
         vis = new VisualisationPanel(width, height);
-        Dimension dimension = new Dimension(500, 500);
         JPanel panel = new JPanel();
         slider = new JSlider(1, 400);
         slider.addChangeListener(listener);
