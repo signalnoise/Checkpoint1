@@ -33,6 +33,8 @@ public class Data {
         return sum/vector.length;
     }
 
+
+
     public static void main(String args[]){
 
         int width = 50; //Grid Size
@@ -41,8 +43,8 @@ public class Data {
         double temperature = 0.0; //Bottom temperature
         double range = 4; //2.5 good
 
-        Glauber isingGrid = new Glauber(width, height, temperature);
-        //Kawasaki isingGrid = new Kawasaki(width, height, temperature);
+        //Glauber isingGrid = new Glauber(width, height, temperature);
+        Kawasaki isingGrid = new Kawasaki(width, height, temperature);
 
         int measureEvery = 10*isingGrid.sweep(); //Once every 10 sweeps good
         int n = 101*measureEvery; //Length of measurement array plus one
@@ -69,7 +71,8 @@ public class Data {
 
             temperature = temperature+tempStep;
             tempArray[i] = temperature;
-            isingGrid.allTrue();
+            //isingGrid.allTrue();
+            isingGrid.fillRandomly();
             isingGrid.setTemperature(temperature);
 
             int count = 0;
