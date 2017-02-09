@@ -35,24 +35,29 @@ public class Data {
 
     public static void main(String args[]){
 
-        double temperature = 1.5; //Bottom temperature
         int width = 50; //Grid Size
         int height = 50;
-        int iterations = 1000000; //Number of iterations per run
+        int N = width*height;
+        double temperature = 0.0; //Bottom temperature
+        double range = 4; //2.5 good
+
         Glauber isingGrid = new Glauber(width, height, temperature);
         //Kawasaki isingGrid = new Kawasaki(width, height, temperature);
-        int n = (5*iterations)/10; //Fraction of data points used to analyse
-        int noSimulations = 100;
-        double range = 1.5; //2.5 good
-        int measureEvery = 5*isingGrid.sweep(); //Once every 10 sweeps good
 
-        int length = n/(measureEvery);
+        int measureEvery = 10*isingGrid.sweep(); //Once every 10 sweeps good
+        int n = 101*measureEvery; //Length of measurement array plus one
+        int wait = 100*isingGrid.sweep();
+        int iterations = wait+n; //Number of iterations per run
+        int noSimulations = 200;
+
+        int length = (n/(measureEvery)) -1;
 
         double[] magnetisation = new double[length];
         double[] susceptibility = new double[noSimulations];
         double[] avgMag = new double[noSimulations];
         double[] energy = new double[length];
         double[] heatCapacity = new double[noSimulations];
+        double[] tempArray = new double[noSimulations];
         double tempStep = range/(double)noSimulations;
 
 
@@ -63,6 +68,7 @@ public class Data {
         for (int i=0; i<(noSimulations); i++) {
 
             temperature = temperature+tempStep;
+            tempArray[i] = temperature;
             isingGrid.allTrue();
             isingGrid.setTemperature(temperature);
 
@@ -72,26 +78,27 @@ public class Data {
             for (int j=0; j<iterations; j++) {
                 isingGrid.update();
 
-               if (j>iterations-(n+1)){
+               if (j>wait){
                    count++;
                    if (count%measureEvery==0) {
                        magnetisation[magnetisationCount] = Math.abs(isingGrid.getMagnetisation());
                        energy[magnetisationCount] = (double)isingGrid.getEnergy();
                        magnetisationCount++;
+
                    }
                }
 
             }
 
-            susceptibility[i] = var(magnetisation)/((double)isingGrid.sweep()*temperature);
-            heatCapacity[i] = var(energy)/((double)isingGrid.sweep()*Math.pow(temperature,2));
+            susceptibility[i] = var(magnetisation)/((double)N*temperature);
+            heatCapacity[i] = var(energy)/((double)N*Math.pow(temperature,2));
             avgMag[i] = avg(magnetisation);
+
 
             log(Double.toString(temperature) + " "
                     + Double.toString(susceptibility[i]) + " "
                     + Double.toString(avgMag[i]) + " "
                     + Double.toString(heatCapacity[i]));
-
 
         }
 
