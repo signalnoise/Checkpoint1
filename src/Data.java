@@ -1,5 +1,8 @@
+import java.util.Random;
 
 public class Data {
+
+    private static Random rand;
 
     private static double var(double[] vector){
 
@@ -33,26 +36,85 @@ public class Data {
         return sum/vector.length;
     }
 
+    private static double bootstrap(double[] vector, double prefactor){
+
+        rand = new Random();
+
+        double[] random = new double[vector.length];
+        double[] bootstrap = new double[10];
+
+        for (int j = 0; j<10; j++) {
+
+            for (int i = 0; i < vector.length; i++) {
+                random[i] = vector[rand.nextInt(vector.length)];
+            }
+
+            bootstrap[j] = prefactor*var(random);
+
+
+        }
+
+        return Math.sqrt(var(bootstrap));
+    }
+
+
     public static void main(String args[]){
+        int wait;
+        int width; //Grid Size
+        int height;
 
         double temperature = 1.5; //Bottom temperature
-        int width = 50; //Grid Size
-        int height = 50;
-        int iterations = 1000000; //Number of iterations per run
-        Glauber isingGrid = new Glauber(width, height, temperature);
-        //Kawasaki isingGrid = new Kawasaki(width, height, temperature);
-        int n = (5*iterations)/10; //Fraction of data points used to analyse
-        int noSimulations = 100;
-        double range = 1.5; //2.5 good
-        int measureEvery = 5*isingGrid.sweep(); //Once every 10 sweeps good
+        double range = 2.5; //2.5 good
+        boolean glauber;
+        int dataPoints;
+        int noSimulations;
+        int dimension = 50;
 
-        int length = n/(measureEvery);
+        try {
+             glauber = Boolean.parseBoolean(args[0]);
+             dimension = Integer.parseInt(args[1]);
+             dataPoints = Integer.parseInt(args[2]);
+             noSimulations = Integer.parseInt(args[3]);
+
+        } catch (Exception e){
+            glauber = true;
+            dataPoints = 100;
+            noSimulations = 100;
+            log("Error: Arguments required are isGlauber, dimension, dataPoints, noSimulations.");
+            System.exit(1);
+        }
+
+        width = dimension;
+        height = dimension;
+        int N = width*height;
+
+        IsingDynamics isingGrid;
+
+        if (glauber){
+            isingGrid = new Glauber(width, height, temperature);
+            wait = 100*isingGrid.sweep();
+        }
+        else {
+            isingGrid = new Kawasaki(width, height, temperature);
+            wait = 400*isingGrid.sweep();
+        }
+
+        int measureEvery = 10*isingGrid.sweep(); //Once every 10 sweeps good
+        int n = (dataPoints+1)*measureEvery; //Length of measurement array plus one
+        int iterations = wait+n; //Number of iterations per run
+
+
+        int length = (n/(measureEvery))-1;
 
         double[] magnetisation = new double[length];
         double[] susceptibility = new double[noSimulations];
         double[] avgMag = new double[noSimulations];
+        double[] avgEnergy = new double[noSimulations];
         double[] energy = new double[length];
         double[] heatCapacity = new double[noSimulations];
+        double[] tempArray = new double[noSimulations];
+        double[] susError = new double[noSimulations];
+        double[] heatError = new double[noSimulations];
         double tempStep = range/(double)noSimulations;
 
 
@@ -63,7 +125,14 @@ public class Data {
         for (int i=0; i<(noSimulations); i++) {
 
             temperature = temperature+tempStep;
-            isingGrid.allTrue();
+            tempArray[i] = temperature;
+            if (glauber) {
+                isingGrid.allTrue();
+            }
+            else{
+                //isingGrid.fillRandomly();
+                isingGrid.fillCheckerboard();
+            }
             isingGrid.setTemperature(temperature);
 
             int count = 0;
@@ -72,26 +141,32 @@ public class Data {
             for (int j=0; j<iterations; j++) {
                 isingGrid.update();
 
-               if (j>iterations-(n+1)){
+               if (j>wait){
                    count++;
                    if (count%measureEvery==0) {
                        magnetisation[magnetisationCount] = Math.abs(isingGrid.getMagnetisation());
                        energy[magnetisationCount] = (double)isingGrid.getEnergy();
                        magnetisationCount++;
+
                    }
                }
 
             }
 
-            susceptibility[i] = var(magnetisation)/((double)isingGrid.sweep()*temperature);
-            heatCapacity[i] = var(energy)/(Math.pow(temperature,2));
+            susceptibility[i] = var(magnetisation)/((double)N*temperature);
+            susError[i] = bootstrap(magnetisation, Math.pow((double)N*temperature,-1));
+            heatCapacity[i] = var(energy)/((double)N*Math.pow(temperature,2));
+            heatError[i] = bootstrap(energy,Math.pow((double)N*Math.pow(temperature,2),-1));
             avgMag[i] = avg(magnetisation);
+            avgEnergy[i] = avg(energy);
 
             log(Double.toString(temperature) + " "
                     + Double.toString(susceptibility[i]) + " "
+                    + Double.toString(susError[i]) + " "
                     + Double.toString(avgMag[i]) + " "
-                    + Double.toString(heatCapacity[i]));
-
+                    + Double.toString(heatCapacity[i]) + " "
+                    + Double.toString(heatError[i]) + " "
+                    + Double.toString(avgEnergy[i]));
 
         }
 

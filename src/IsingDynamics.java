@@ -95,7 +95,7 @@ public abstract class IsingDynamics {
     public void metropolis() {
         double deltaE = this.energyChange();
         if (deltaE<0) this.flip();
-        if (deltaE >= 0) {
+        else {
             double p = Math.exp(-deltaE / this.temperature);
             double r = rand.nextDouble();
             if (r<p){
@@ -112,6 +112,15 @@ public abstract class IsingDynamics {
             }
         }
 
+    }
+
+    public void fillCheckerboard(){
+        for (int i=0; i<this.grid.length; i++) {
+            for (int j=0; j<this.grid[i].length; j++) {
+                if(((i+j) & 1) == 0) grid[i][j] = true;
+                else grid[i][j] = false;
+            }
+        }
     }
 
     public void allTrue(){
